@@ -1,27 +1,25 @@
 package rasterizers;
 
-import model.Vertex;
+
 import raster.ZBuffer;
 import shaders.Shader;
 import shaders.ShaderConstant;
 import transforms.Col;
-import transforms.Point3D;
 import transforms.Vec3D;
 import utils.Lerp;
 
+import java.awt.*;
+
 public class TriangleRasterizer {
 
-    private final ZBuffer zBuffer;
 
     private final Lerp lerp;
     private Shader shader;
 
-    public TriangleRasterizer(ZBuffer zBuffer) {
-        this.zBuffer = zBuffer;
+    public TriangleRasterizer() {
         this.lerp = new Lerp();
         setShader(new ShaderConstant());
     }
-
 
     public void setShader(Shader shader) {
         this.shader = shader;
@@ -33,7 +31,7 @@ public class TriangleRasterizer {
         //Graphics g = zBuffer.getImageBuffer().getGraphics();
         //g.setColor(new Color(0x00ff00));
         //g.drawLine((int) a.getX(), (int) a.getGetY(), (int) b.getX(), (int) b.getGetY());
-        //.drawLine((int) b.getX(), (int) b.getGetY(), (int) c.getX(), (int) c.getGetY());
+        //g.drawLine((int) b.getX(), (int) b.getGetY(), (int) c.getX(), (int) c.getGetY());
         //g.drawLine((int) c.getX(), (int) c.getGetY(), (int) a.getX(), (int) a.getGetY());
 
         Vec3D temp;
@@ -107,8 +105,8 @@ public class TriangleRasterizer {
 
 
             //interpolacni keoficient pro AC
-            double t2 = (y - b.getGetY()) / (c.getGetY() - b.getGetY());
-            int x2 = (int) ((1 - t2) * b.getX() + t2 * c.getX());
+            double t2 = (y - a.getGetY()) / (c.getGetY() - a.getGetY());
+            int x2 = (int) ((1 - t2) * a.getX() + t2 * c.getX());
 
             Vec3D vac = lerp.lerp(b, c, t2);
 

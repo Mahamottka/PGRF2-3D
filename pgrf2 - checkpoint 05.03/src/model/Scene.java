@@ -1,5 +1,8 @@
 package model;
 
+import render.Renderer;
+
+import java.awt.image.renderable.RenderableImage;
 import java.util.ArrayList;
 
 public class Scene {
@@ -17,4 +20,11 @@ public class Scene {
     public Solid getSolid(int index){
         return solids.get(index);
     }
+
+    public void draw(Renderer renderer){
+        for (Solid solid: solids) {
+            renderer.render(solid);
+        }
+    }
+
 }

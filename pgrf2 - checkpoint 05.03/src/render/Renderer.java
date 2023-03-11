@@ -5,6 +5,10 @@ import model.Solid;
 import model.Vertex;
 import rasterizers.Rasterizer;
 import rasterizers.TriangleRasterizer;
+import transforms.Camera;
+import transforms.Mat4;
+import transforms.Mat4Transl;
+import transforms.Mat4ViewRH;
 import utils.Clip;
 import utils.Lerp;
 
@@ -14,18 +18,38 @@ public class Renderer {
 
     private final Rasterizer rasterizer;
     private Lerp lerp;
+    private Mat4 proj;
+    private Camera camera;
+    private Mat4 cameraMat;
 
-    public Renderer(TriangleRasterizer triangleRasterizer, Rasterizer rasterizer) {
+    public Renderer(Rasterizer rasterizer, Camera camera, Mat4 proj) {
         this.rasterizer = rasterizer;
         this.lerp = new Lerp();
+        this.proj = proj;
+        this.camera = camera;
+    }
+
+    public void setCamera(Camera camera) {
+        this.camera = camera;
     }
 
     public void render(Solid solid) {
+        cameraMat = camera.getViewMatrix();
         for (Part part : solid.getPartBuffer()) {
             switch (part.getType()) {
                 case LINE:
-                    //TODO implementovat
-                    renderLine();
+                    int start2 = part.getIntex();
+                    for (int i = 0; i < part.getCount(); i++) {
+                        int indexA = start2;
+                        int indexB = start2 + 1;
+
+                        start2 += 2;
+
+                        Vertex a = solid.getVertexBuffer().get(solid.getIndexBuffer().get(indexA));
+                        Vertex b = solid.getVertexBuffer().get(solid.getIndexBuffer().get(indexB));
+
+                        renderLine(a,b);
+                    }
                     break;
                 case TRIANGLE:
                     int start = part.getIntex();
@@ -52,24 +76,39 @@ public class Renderer {
     }
 
     private void renderLine(Vertex a, Vertex b){
-        a = a.transform();
-        b = b.transform();
+        a = a.transform(a.getModel(), cameraMat, proj);
+        b = b.transform(b.getModel(), cameraMat, proj);
 
         //když oba dva body jsou mimo vykreslovacín objem, tak přestaneš vykreslovat tvar
         if (Clip.testMultipleVertex(a,b) == 2) return;
         rasterizer.rasterizeLine(a,b);
     }
     private void renderTriangle(Vertex a, Vertex b, Vertex c){
-        a = a.transform();
-        b = b.transform();
-        c = c.transform();
+        a = a.transform(a.getModel(), cameraMat, proj);
 
-        if (Clip.testMultipleVertex(a,b) == 2) return;
+        b = b.transform(b.getModel(), cameraMat, proj);
+        c = c.transform(c.getModel(), cameraMat, proj);
+
+        if (Clip.testMultipleVertex(a,b,c) == 3) return;
+        //Ořezujeme podle Z
+        while (!(a.getPosition().getZ() >= b.getPosition().getZ() && b.getPosition().getZ() >= c.getPosition().getZ())) {
+            if (a.getPosition().getZ() < b.getPosition().getZ()) {
+                Vertex temp = a;
+                a = b;
+                b = temp;
+            }
+            if (b.getPosition().getZ() < c.getPosition().getZ()) {
+                Vertex temp = b;
+                b = c;
+                c = temp;
+            }
+        }
         rasterizer.rastarizeTriangle(a,b,c);
     }
     private void renderPoint(Vertex a){
 
     }
+
 
     /*
     private void renderTriangle(Vertex a, Vertex b, Vertex c) {
@@ -110,8 +149,5 @@ public class Renderer {
         //triangleRasterizer.rasterize(a,b,c)
     }
 */
-    public void render(List<Solid> scene) {
-        for (Solid solid : scene)
-            render(solid);
-    }
+
 }

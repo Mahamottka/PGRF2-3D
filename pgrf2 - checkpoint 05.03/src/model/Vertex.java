@@ -6,6 +6,7 @@ public class Vertex implements Vectorizable<Vertex>{
 
     private final Point3D position;
     private Col color;
+    private Mat4 model = new Mat4Identity();
 
     //TODO souradnice do textury - toto je pro textury
     private Vec2D u,v;
@@ -78,7 +79,7 @@ public class Vertex implements Vectorizable<Vertex>{
     public Vertex transform(Mat4 trans, Mat4 view, Mat4 projection) {
         Vertex v;
         v = this.mul(trans);
-        v.mul(view);
+        v = v.mul(view);
         return v.mul(projection);
     }
 
@@ -87,7 +88,7 @@ public class Vertex implements Vectorizable<Vertex>{
     }
 
     public Vec3D toVec3D(){
-        return new Vec3D(position.getX() + position.getY() + position.getZ());
+        return new Vec3D(position.getX(), position.getY(),position.getZ());
     }
 
     public Vec3D transformToWindow(int width, int height) {
@@ -100,6 +101,7 @@ public class Vertex implements Vectorizable<Vertex>{
                         1));
     }
 
-
-
+    public Mat4 getModel() {
+        return model;
+    }
 }

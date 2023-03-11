@@ -26,6 +26,10 @@ public class ZBuffer {
 
     }
 
+    public DepthBuffer getDepthBuffer() {
+        return depthBuffer;
+    }
+
     public ImageBuffer getImageBuffer() {
         return imageBuffer;
     }

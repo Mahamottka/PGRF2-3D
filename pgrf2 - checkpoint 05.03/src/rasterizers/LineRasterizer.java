@@ -3,85 +3,79 @@ package rasterizers;
 import raster.ZBuffer;
 import shaders.Shader;
 import shaders.ShaderConstant;
+import transforms.Col;
+import transforms.Vec3D;
+import utils.Lerp;
 
 public class LineRasterizer {
-    private final ZBuffer zBuffer;
-    private Shader shader;
-    public LineRasterizer(ZBuffer zBuffer) {
-            this.zBuffer = zBuffer;
-        setShader(new ShaderConstant());
-        }
 
-    private void setShader(Shader shader) {
-        this.shader = shader;
+    private final Lerp lerp;
+    private Shader shader;
+
+    public LineRasterizer() {
+        this.lerp = new Lerp();
     }
 
-    protected void drawLine(int x1, int y1, int x2, int y2, int color) { //nějakej ten algoritmus, u mě trivial
 
-        /*draw*/
+    public void rasterize(Vec3D a, Vec3D b, Vec3D c, ZBuffer zBuffer) {
 
-
-        float dy = y2 - y1;
-        float dx = x2 - x1;
-        float k; //delta x delta y K
-        int pomocna;
-
-
-        if (dx == 0) {  //paralelní s osou X
-            if (y2 < y1) { //obracení po ose
-                pomocna = y1;
-                y1 = y2;
-                y2 = pomocna;
+        Vec3D temp;
+        while (!(a.getGetY() <= b.getGetY() && b.getGetY() <= c.getGetY())) {
+            if (a.getGetY() > b.getGetY()) {
+                temp = a;
+                a = b;
+                b = temp;
             }
-            for (int i = y1; i < y2; i += 1) { // dotted = nastavuje mezery (1 = bez mezer)
-                zBuffer.drawWithTest(x1, i, shader.);   //vykreslování jednotlivých pixelů
+            if (b.getGetY() > c.getGetY()) {
+                temp = b;
+                b = c;
+                c = temp;
             }
-            return; //aby se to dále neprovádělo
         }
 
-        if (dy == 0) {  //paralelní s osou Y
+        /***
+         * Math.max - for better perfomance -> nekotrolujeme ohranice az v zBufferu
+         * Max se podívá na dva vstupní parametry a vybere větší
+         * Min to dělá to samé akorát zvrchu
+         * Max a min vlastně řeší ořezávání
+         */
+        //Prvni cyklus
+        for (int y = (int) Math.max(a.getGetY() + 1, 0);
+             y <= Math.min(b.getGetY(), zBuffer.getImageBuffer().getHeight());
+             y++) {
 
-            if (x2 < x1) { //obracení po ose
-                pomocna = x1;
+            //interpolacni koeficient pro AB
+            double t1 = (y - a.getGetY()) / (b.getGetY() - a.getGetY());
+            int x1 = (int) ((1 - t1) * a.getX() + t1 * b.getX());
+
+            Vec3D vab = lerp.lerp(a, b, t1);
+
+
+            //interpolacni keoficient pro AC
+            double t2 = (y - a.getGetY()) / (c.getGetY() - a.getGetY());
+            int x2 = (int) ((1 - t2) * a.getX() + t2 * c.getX());
+
+            Vec3D vac = lerp.lerp(a, c, t2);
+
+            //vypocet pro Z
+            double zStep = ((vac.getZ() - vab.getZ()) / (x2 - x1));
+            x1 = Math.max(x1 + 1, 0);
+            x2 = Math.min(x2, zBuffer.getImageBuffer().getWidth() - 1);
+            double z = vab.getZ();
+
+            if (x1 > x2) {
+                int helper = x1;
                 x1 = x2;
-                x2 = pomocna;
+                x2 = helper;
+                z = vac.getZ();
             }
 
-            zBuffer
-            for (int i = x1; i < x2; i += 1) { // dotted = nastavuje mezery (1 = bez mezer)
-                raster.setPixel(i, y2, color);   //vykreslování jednotlivých pixelů
-            }
-            return;
-        }
-
-        k = dy / dx;
-        float q = y1 - (k * x1);
-        if (k <= 1 && k >= -1) { //tímto se osa řídí, pravej levej X trychtýř ><
-            if (x2 < x1) { //obracení po ose
-                pomocna = x1;
-                x1 = x2;
-                x2 = pomocna;
-
-            }
-
-            for (int i = x1; i < x2; i += 1) {
-                int yy = (int) ((k * i) + q);
-                raster.setPixel(i, yy, color);
-            }
-
-
-        } else { //tohle se stará o Y a -Y trychtýře
-            if (y2 < y1) {   //obracení po ose
-                pomocna = y1;
-                y1 = y2;
-                y2 = pomocna;
-            }
-
-
-            for (int i = y1; i < y2; i += 1) {
-                int xx = (int) ((i - q) / k);
-                raster.setPixel(xx, i, color);
+            for (int x = x1; x <= x2; x++) {
+                //barvy se interpolují špatně, proto prostě bez shaderu (for now at least)
+                zBuffer.drawWithTest(x, y, z, new Col(0x00ff00));//TODO vertex ten interpolovanej, same bellow);
+                z += zStep;
             }
         }
     }
 }
+

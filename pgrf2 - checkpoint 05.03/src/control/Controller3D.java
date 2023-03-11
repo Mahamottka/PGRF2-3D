@@ -1,35 +1,72 @@
 package control;
 
 import Solids.Arrow;
+import Solids.Triangle;
+import model.Scene;
 import model.Solid;
 import raster.ImageBuffer;
 import raster.ZBuffer;
+import rasterizers.Rasterizer;
 import render.Renderer;
 import shaders.Shader;
-import transforms.Col;
+import transforms.*;
 import rasterizers.TriangleRasterizer;
 import view.Panel;
 
+import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Controller3D implements Controller {
     private final Panel panel;
+    private int ox, oy;
     private final ZBuffer zBuffer;
-    private Renderer renderer;
+    private final Scene scene;
+    private double cameraSpeed = 0.3;
+    private final Renderer renderer;
+    private Camera camera;
+    private final Rasterizer rasterizer;
 
-    private final TriangleRasterizer triangleRasterizer;
 
     public Controller3D(Panel panel) {
         this.panel = panel;
         this.zBuffer = new ZBuffer(panel.getRaster());
-        this.triangleRasterizer = new TriangleRasterizer(zBuffer);
+        this.rasterizer = new Rasterizer(zBuffer);
+        this.scene = new Scene();
+        Solid triangle = new Triangle();
+        scene.addSolid(triangle);
         Col color = new Col(0xff0000);
 
+        //view
+        camera = new Camera(
+                new Vec3D(100, -100, 50), //pokud chci 3rd person, nastavit x a y a z na nulu
+                Math.toRadians(90),  //azimut
+                Math.toRadians(0),  //zenith
+                1, true     //pro 3rd person, nastavit na false a 1 na 4 (třeba)
+        );
 
-        Shader blueShader = y ->{
+
+        Mat4OrthoRH projekceOrtho = new Mat4OrthoRH(
+                zBuffer.getImageBuffer().getWidth() / 4.,
+                zBuffer.getImageBuffer().getHeight() / 4.,
+                0.1,
+                200
+        );
+
+        Mat4PerspRH projekcePersp = new Mat4PerspRH(
+                Math.toRadians(60),
+                zBuffer.getImageBuffer().getHeight() / (double) zBuffer.getImageBuffer().getWidth(),
+                0.1,
+                1000
+        );
+        Shader blueShader = y -> {
             return new Col(0x0000ff);
         };
-        triangleRasterizer.setShader(blueShader);
+
+        renderer = new Renderer(rasterizer, camera, projekcePersp);
+
+
         initObjects(panel.getRaster());
         initListeners();
         redraw();
@@ -48,21 +85,64 @@ public class Controller3D implements Controller {
                 initObjects(panel.getRaster());
             }
         });
+
+        panel.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+
+                boolean update = false;
+                if (e.getKeyCode() == KeyEvent.VK_W){
+                    camera = camera.forward(cameraSpeed);
+                    update = true;}
+                if (e.getKeyCode() == KeyEvent.VK_S){
+                    camera = camera.backward(cameraSpeed);
+                    update = true;}
+                if (e.getKeyCode() == KeyEvent.VK_A){
+                    camera = camera.left(cameraSpeed);
+                    update = true;}
+                if (e.getKeyCode() == KeyEvent.VK_D){
+                    camera = camera.right(cameraSpeed);
+                    update = true;}
+
+                if (update){
+                    redraw();
+                }
+            }
+        });
+
+        panel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                ox = e.getX();
+                oy = e.getY();
+            }
+        });
+        panel.addMouseMotionListener(new MouseAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                super.mouseDragged(e);
+                System.out.println("Azimut: " + camera.getAzimuth() + " Zenith: " + camera.getZenith());
+                int dx = ox - e.getX();
+                int dy = oy - e.getY();
+                double azimuth = dx / 1000.;
+                double zenizh = dy / 1000.;
+
+                camera =  camera.withAzimuth(camera.getAzimuth() + azimuth);
+                camera = camera.withZenith(camera.getZenith() + zenizh);
+                System.out.println("Azimut: " + camera.getAzimuth() + " Zenith: " + camera.getZenith());
+                ox = e.getX();
+                oy = e.getY();
+
+                redraw(); //překresluje obrazovku
+            }
+        });
     }
 
     private void redraw() {
+        renderer.setCamera(camera);
         panel.clear();
-
-     //   zBuffer.drawWithTest(10,10,0.5, new Col(0x00ff00));
-     //  zBuffer.drawWithTest(10,10,0.7, new Col(0xff0000));
-
-      //  triangleRasterizer.rasterize(
-        //        new Point3D(1,1,0.3),
-          //      new Point3D(-1,0,0.3),
-            //    new Point3D(0,-1,0.3)
-        //);
-
-
+        zBuffer.getDepthBuffer().clear();
+        scene.draw(renderer);
         panel.repaint();
     }
 }

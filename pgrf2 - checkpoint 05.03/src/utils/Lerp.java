@@ -1,7 +1,5 @@
 package utils;
 
-import model.Vectorizable;
-import model.Vertex;
 import transforms.Vec3D;
 
 /**
