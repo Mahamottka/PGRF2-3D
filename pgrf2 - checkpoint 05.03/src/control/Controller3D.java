@@ -10,7 +10,6 @@ import rasterizers.Rasterizer;
 import render.Renderer;
 import shaders.Shader;
 import transforms.*;
-import rasterizers.TriangleRasterizer;
 import view.Panel;
 
 import java.awt.*;
@@ -121,7 +120,7 @@ public class Controller3D implements Controller {
             @Override
             public void mouseDragged(MouseEvent e) {
                 super.mouseDragged(e);
-                System.out.println("Azimut: " + camera.getAzimuth() + " Zenith: " + camera.getZenith());
+
                 int dx = ox - e.getX();
                 int dy = oy - e.getY();
                 double azimuth = dx / 1000.;
@@ -129,7 +128,7 @@ public class Controller3D implements Controller {
 
                 camera =  camera.withAzimuth(camera.getAzimuth() + azimuth);
                 camera = camera.withZenith(camera.getZenith() + zenizh);
-                System.out.println("Azimut: " + camera.getAzimuth() + " Zenith: " + camera.getZenith());
+
                 ox = e.getX();
                 oy = e.getY();
 

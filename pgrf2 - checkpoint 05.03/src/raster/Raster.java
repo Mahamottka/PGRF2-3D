@@ -16,11 +16,13 @@ public interface Raster<E> {
 
     default boolean isInside(int x, int y) {
 
-        if (x < getWidth() && y < getHeight() && x >= 0 && y >= 0) {
-            return true;
+        if(x<0 || x > this.getWidth()-1){
+            return false;
         }
-
-        return false;
+        if(y<0 || y > this.getHeight()-1){
+            return false;
+        }
+        return true;
 
     }
 

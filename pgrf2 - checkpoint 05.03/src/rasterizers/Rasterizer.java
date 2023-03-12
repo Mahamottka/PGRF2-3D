@@ -20,6 +20,7 @@ public class Rasterizer {
         w = zBuffer.getImageBuffer().getWidth();
         triangleRasterizer = new TriangleRasterizer();
         lineRasterizer = new LineRasterizer();
+
     }
 
     public void rastarizeTriangle(Vertex a, Vertex b, Vertex c){

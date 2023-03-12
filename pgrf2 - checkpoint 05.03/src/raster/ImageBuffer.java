@@ -26,12 +26,17 @@ public class ImageBuffer implements Raster<Col> {
 
     @Override
     public Col getValue(int x, int y) {
-        return new Col(img.getRGB(x, y));
+        if(isInside(x,y)){
+            return new Col(img.getRGB(x,y));
+        }
+        else return new Col(0);
     }
 
     @Override
     public void setValue(int x, int y, Col color) {
-        img.setRGB(x, y, color.getRGB());
+        if(isInside(x,y)){
+            img.setRGB(x, y, color.getRGB());
+        }
     }
 
     @Override
@@ -59,8 +64,6 @@ public class ImageBuffer implements Raster<Col> {
     public Graphics getGraphics(){
         return img.getGraphics();
     }
-
-
 
 }
 

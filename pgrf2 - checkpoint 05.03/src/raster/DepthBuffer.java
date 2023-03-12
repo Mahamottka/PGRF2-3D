@@ -53,4 +53,5 @@ public class DepthBuffer implements Raster<Double> {
             buffer[x][y] = value;
         }
     }
+
 }

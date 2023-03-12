@@ -46,10 +46,10 @@ public class TriangleRasterizer {
          * Max se podívá na dva vstupní parametry a vybere větší
          * Min to dělá to samé akorát zvrchu
          * Max a min vlastně řeší ořezávání
-         */
+        */
         //Prvni cyklus
         for (int y = (int) Math.max(a.getGetY() + 1, 0);
-             y <= Math.min(b.getGetY(), zBuffer.getImageBuffer().getHeight());
+             y <= Math.min(b.getGetY(), zBuffer.getImageBuffer().getHeight() -1) ;
              y++) {
 
             //interpolacni koeficient pro AB
@@ -87,7 +87,7 @@ public class TriangleRasterizer {
 
         //Druhy cyklus
         for (int y = (int) Math.max(b.getGetY() + 1, 0);
-             y <= Math.min(c.getGetY(), zBuffer.getImageBuffer().getHeight());
+             y <= Math.min(c.getGetY(), zBuffer.getImageBuffer().getHeight() -1);
              y++) {
 
             //interpolacni koeficient pro AB
@@ -101,7 +101,7 @@ public class TriangleRasterizer {
             double t2 = (y - a.getGetY()) / (c.getGetY() - a.getGetY());
             int x2 = (int) ((1 - t2) * a.getX() + t2 * c.getX());
 
-            Vec3D vac = lerp.lerp(b, c, t2);
+            Vec3D vac = lerp.lerp(a, c, t2);
 
             //vypocet pro Z
             double zStep = ((vac.getZ() - vab.getZ())/ (x2 - x1));

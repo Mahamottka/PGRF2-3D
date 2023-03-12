@@ -4,7 +4,7 @@ import model.Part;
 import model.Solid;
 import model.Vertex;
 import rasterizers.Rasterizer;
-import rasterizers.TriangleRasterizer;
+
 import transforms.*;
 import utils.Clip;
 import utils.Lerp;
@@ -77,7 +77,7 @@ public class Renderer {
         b = b.transform(b.getModel(), cameraMat, proj);
 
         //když oba dva body jsou mimo vykreslovacín objem, tak přestaneš vykreslovat tvar
-        if (Clip.testMultipleVertex(a,b) == 2) return;
+        //if (Clip.testMultipleVertex(a,b) == 2) return;
 
         rasterizer.rasterizeLine(a,b);
     }
@@ -86,21 +86,10 @@ public class Renderer {
         b = b.transform(b.getModel(), cameraMat, proj);
         c = c.transform(c.getModel(), cameraMat, proj);
 
-        if (Clip.testMultipleVertex(a,b,c) == 3) return;
+        //if (Clip.testMultipleVertex(a,b,c) == 3) return;
         //Ořezujeme podle Z/
-        while (!(a.getPosition().getZ() >= b.getPosition().getZ() && b.getPosition().getZ() >= c.getPosition().getZ())) {
-            if (a.getPosition().getZ() < b.getPosition().getZ()) {
-                Vertex temp = a;
-                a = b;
-                b = temp;
-            }
-            if (b.getPosition().getZ() < c.getPosition().getZ()) {
-                Vertex temp = b;
-                b = c;
-                c = temp;
-            }
-        }
-        rasterizer.rastarizeTriangle(a,b,c);
+
+        clipTriangle(a,b,c);
     }
     private void renderPoint(Vertex a){
 
@@ -116,7 +105,7 @@ public class Renderer {
                 (a.getZ() < 0 && b.getZ() < 0 && c.getZ() < 0) ||
                 (a.getZ() > a.getW() && b.getZ() > b.getW() && c.getZ() > c.getW()))
             return;
-            //TODO: Orezani podle z - slide103
+
 
         //seřazení vrcholů podle Z, Az = max
         Vertex temp;
@@ -150,11 +139,17 @@ public class Renderer {
         }
 
         if (c.getZ() < zMin) {
-            //TODO: dodelat
+            double t1 = (zMin - b.getZ()) / (c.getZ() - b.getZ());
+            Vertex vbc = lerp.lerp(b, c, t1);
 
+            double t2 = (zMin - a.getZ() / c.getZ() - a.getZ());
+            Vertex vac = lerp.lerp(a, c, t2);
+
+            rasterizer.rastarizeTriangle(a, vbc, vac);
+            return;
         }
 
-        //triangleRasterizer.rasterize(a,b,c)
+        rasterizer.rastarizeTriangle(a,b,c);
     }
 
 }
