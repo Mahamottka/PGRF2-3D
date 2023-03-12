@@ -44,7 +44,10 @@ public class DepthBuffer implements Raster<Double> {
 
     @Override
     public Double getValue(int x, int y) {
-        return buffer[x][y];
+        if (isInside(x, y)) {
+            return buffer[x][y];
+        }
+        return buffer[0][0];
     }
 
     @Override
