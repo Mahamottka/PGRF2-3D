@@ -5,10 +5,7 @@ import model.Solid;
 import model.Vertex;
 import rasterizers.Rasterizer;
 import rasterizers.TriangleRasterizer;
-import transforms.Camera;
-import transforms.Mat4;
-import transforms.Mat4Transl;
-import transforms.Mat4ViewRH;
+import transforms.*;
 import utils.Clip;
 import utils.Lerp;
 
@@ -81,16 +78,16 @@ public class Renderer {
 
         //když oba dva body jsou mimo vykreslovacín objem, tak přestaneš vykreslovat tvar
         if (Clip.testMultipleVertex(a,b) == 2) return;
+
         rasterizer.rasterizeLine(a,b);
     }
     private void renderTriangle(Vertex a, Vertex b, Vertex c){
         a = a.transform(a.getModel(), cameraMat, proj);
-
         b = b.transform(b.getModel(), cameraMat, proj);
         c = c.transform(c.getModel(), cameraMat, proj);
 
         if (Clip.testMultipleVertex(a,b,c) == 3) return;
-        //Ořezujeme podle Z
+        //Ořezujeme podle Z/
         while (!(a.getPosition().getZ() >= b.getPosition().getZ() && b.getPosition().getZ() >= c.getPosition().getZ())) {
             if (a.getPosition().getZ() < b.getPosition().getZ()) {
                 Vertex temp = a;
@@ -110,9 +107,8 @@ public class Renderer {
     }
 
 
-    /*
-    private void renderTriangle(Vertex a, Vertex b, Vertex c) {
-        //TODO: fast clip - slide99
+
+    private void clipTriangle(Vertex a, Vertex b, Vertex c) {
         if ((a.getX() > a.getW() && b.getX() > b.getW() && c.getX() > c.getW()) ||
                 (a.getX() < -a.getW() && b.getX() < -b.getW() && c.getX() < -c.getW()) ||
                 (a.getY() < -a.getW() && b.getY() < -b.getW() && c.getY() < -c.getW()) ||
@@ -122,10 +118,23 @@ public class Renderer {
             return;
             //TODO: Orezani podle z - slide103
 
-            //TODO: seradit vrcholi podle Z, kde Az je největší = max
+        //seřazení vrcholů podle Z, Az = max
+        Vertex temp;
+        while (!(a.getZ() >= b.getZ() && b.getZ() >= c.getZ())) {
+            if (a.getZ() < b.getZ()) {
+                temp = a;
+                a = b;
+                b = temp;
+            }
+            if (b.getZ() < c.getZ()) {
+                temp = b;
+                b = c;
+                c = temp;
+            }
+        }
 
-            //orezani trojuhelniku
-            double zMin = 0;
+
+        double zMin = 0;
         if (a.getZ() < zMin) {
             return;
         }
@@ -136,8 +145,7 @@ public class Renderer {
             double t2 = (zMin - a.getZ() / c.getZ() - a.getZ());
             Vertex vac = lerp.lerp(a, c, t2);
 
-            triangleRasterizer.rasterize(a, vab, vac);
-
+            rasterizer.rastarizeTriangle(a, vab, vac);
             return;
         }
 
@@ -148,6 +156,5 @@ public class Renderer {
 
         //triangleRasterizer.rasterize(a,b,c)
     }
-*/
 
 }

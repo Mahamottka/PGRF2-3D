@@ -23,7 +23,7 @@ public class Controller3D implements Controller {
     private int ox, oy;
     private final ZBuffer zBuffer;
     private final Scene scene;
-    private double cameraSpeed = 0.3;
+    private double cameraSpeed = 10;
     private final Renderer renderer;
     private Camera camera;
     private final Rasterizer rasterizer;

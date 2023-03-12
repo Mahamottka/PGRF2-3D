@@ -19,6 +19,7 @@ public class Rasterizer {
         h = zBuffer.getImageBuffer().getHeight();
         w = zBuffer.getImageBuffer().getWidth();
         triangleRasterizer = new TriangleRasterizer();
+        lineRasterizer = new LineRasterizer();
     }
 
     public void rastarizeTriangle(Vertex a, Vertex b, Vertex c){
@@ -40,7 +41,7 @@ public class Rasterizer {
         Vec3D aV = a.transformToWindow(w,h);
         Vec3D bV = b.transformToWindow(w,h);
 
-        lineRasterizer.rasterize(aV, bV, bV, zBuffer);
+        lineRasterizer.rasterize(aV, bV, zBuffer);
 
     }
     public void rasterizePoint(Vertex a){

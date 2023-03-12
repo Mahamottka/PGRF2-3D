@@ -8,7 +8,6 @@ import transforms.Col;
 import transforms.Vec3D;
 import utils.Lerp;
 
-import java.awt.*;
 
 public class TriangleRasterizer {
 
@@ -27,12 +26,6 @@ public class TriangleRasterizer {
 
     public void rasterize(Vec3D a, Vec3D b, Vec3D c, ZBuffer zBuffer) {
 
-        //pro debug ucely
-        //Graphics g = zBuffer.getImageBuffer().getGraphics();
-        //g.setColor(new Color(0x00ff00));
-        //g.drawLine((int) a.getX(), (int) a.getGetY(), (int) b.getX(), (int) b.getGetY());
-        //g.drawLine((int) b.getX(), (int) b.getGetY(), (int) c.getX(), (int) c.getGetY());
-        //g.drawLine((int) c.getX(), (int) c.getGetY(), (int) a.getX(), (int) a.getGetY());
 
         Vec3D temp;
         while (!(a.getGetY() <= b.getGetY() && b.getGetY() <= c.getGetY())) {

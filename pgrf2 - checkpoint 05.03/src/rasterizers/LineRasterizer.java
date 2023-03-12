@@ -2,80 +2,65 @@ package rasterizers;
 
 import raster.ZBuffer;
 import shaders.Shader;
-import shaders.ShaderConstant;
 import transforms.Col;
 import transforms.Vec3D;
 import utils.Lerp;
 
 public class LineRasterizer {
 
-    private final Lerp lerp;
-    private Shader shader;
-
     public LineRasterizer() {
-        this.lerp = new Lerp();
     }
 
+    /***
+     * Kód podobný vykreslování čáry jako v PGRF1, potřebujeme si pokrýt všechny kvadrály, to nám zařizuje to K.
+     * Pak tu řešíme částečně i ořezávání, stejně jako v TriangleRasterizer
+     * @param a after transformtowindow
+     * @param b after transformtowindow
+     * @param zBuffer just a zbuffer
+     */
+    public void rasterize(Vec3D a, Vec3D b, ZBuffer zBuffer) {
 
-    public void rasterize(Vec3D a, Vec3D b, Vec3D c, ZBuffer zBuffer) {
+        //kvadrály
+        double k = (b.getGetY() - a.getGetY()) / (b.getX() - a.getX());
+        if (k <= 1 && k >= -1) {
 
-        Vec3D temp;
-        while (!(a.getGetY() <= b.getGetY() && b.getGetY() <= c.getGetY())) {
+            //If x1 > x2
+            Vec3D temp;
+            if (a.getX() > b.getX()) {
+                temp = a;
+                a = b;
+                b = temp;
+            }
+            for (int x = Math.max((int) a.getX() + 1, 0);
+                 x <= Math.min(b.getX(), zBuffer.getImageBuffer().getWidth() - 1);
+                 x++) {
+                double t = (x - a.getX()) / (b.getX() - a.getX());
+                int y = (int) (a.getGetY() * (1 - t) + b.getGetY() * t);
+                if (y < 0 && y > zBuffer.getImageBuffer().getHeight() - 1) continue;
+
+                double z = (a.getZ() * (1 - t) + b.getZ() * t);
+                zBuffer.drawWithTest(x, y, z, new Col(0x00ff00));
+            }
+        } else {
+
+            //if x1 > x2
+            Vec3D temp;
             if (a.getGetY() > b.getGetY()) {
                 temp = a;
                 a = b;
                 b = temp;
             }
-            if (b.getGetY() > c.getGetY()) {
-                temp = b;
-                b = c;
-                c = temp;
+            for (int y = Math.max((int) a.getGetY() + 1, 0);
+                 y <= Math.min(b.getGetY(), zBuffer.getImageBuffer().getHeight() - 1);
+                 y++) {
+                double t = (y - a.getGetY()) / (b.getGetY() - a.getGetY());
+                int x = (int) (a.getX() * (1 - t) + b.getX() * t);
+                if (x < 0 && x > zBuffer.getImageBuffer().getWidth() - 1) continue;
+
+                double z = (a.getZ() * (1 - t) + b.getZ() * t);
+                zBuffer.drawWithTest(x, y, z, new Col(0x00ff00));
             }
         }
 
-        /***
-         * Math.max - for better perfomance -> nekotrolujeme ohranice az v zBufferu
-         * Max se podívá na dva vstupní parametry a vybere větší
-         * Min to dělá to samé akorát zvrchu
-         * Max a min vlastně řeší ořezávání
-         */
-        //Prvni cyklus
-        for (int y = (int) Math.max(a.getGetY() + 1, 0);
-             y <= Math.min(b.getGetY(), zBuffer.getImageBuffer().getHeight());
-             y++) {
-
-            //interpolacni koeficient pro AB
-            double t1 = (y - a.getGetY()) / (b.getGetY() - a.getGetY());
-            int x1 = (int) ((1 - t1) * a.getX() + t1 * b.getX());
-
-            Vec3D vab = lerp.lerp(a, b, t1);
-
-
-            //interpolacni keoficient pro AC
-            double t2 = (y - a.getGetY()) / (c.getGetY() - a.getGetY());
-            int x2 = (int) ((1 - t2) * a.getX() + t2 * c.getX());
-
-            Vec3D vac = lerp.lerp(a, c, t2);
-
-            //vypocet pro Z
-            double zStep = ((vac.getZ() - vab.getZ()) / (x2 - x1));
-            x1 = Math.max(x1 + 1, 0);
-            x2 = Math.min(x2, zBuffer.getImageBuffer().getWidth() - 1);
-            double z = vab.getZ();
-
-            if (x1 > x2) {
-                int helper = x1;
-                x1 = x2;
-                x2 = helper;
-                z = vac.getZ();
-            }
-
-            for (int x = x1; x <= x2; x++) {
-                //barvy se interpolují špatně, proto prostě bez shaderu (for now at least)
-                zBuffer.drawWithTest(x, y, z, new Col(0x00ff00));//TODO vertex ten interpolovanej, same bellow);
-                z += zStep;
-            }
-        }
     }
 }
-

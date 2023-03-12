@@ -2,7 +2,6 @@ package model;
 
 import render.Renderer;
 
-import java.awt.image.renderable.RenderableImage;
 import java.util.ArrayList;
 
 public class Scene {

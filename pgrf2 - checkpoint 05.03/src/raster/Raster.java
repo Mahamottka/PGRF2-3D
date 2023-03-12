@@ -14,11 +14,14 @@ public interface Raster<E> {
 
     void setValue(int x, int y, E value);
 
-    default boolean isInside(int x, int y){
-        //getWidth() getHeight
+    default boolean isInside(int x, int y) {
 
-        //TODO kontrola, true tam je jenom aby to tedka fungovalo
-        return true;
+        if (x < getWidth() && y < getHeight() && x >= 0 && y >= 0) {
+            return true;
+        }
+
+        return false;
+
     }
 
 }
