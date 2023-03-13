@@ -24,7 +24,7 @@ public class TriangleRasterizer {
         this.shader = shader;
     }
 
-    public void rasterize(Vec3D a, Vec3D b, Vec3D c, ZBuffer zBuffer) {
+    public void rasterize(Vec3D a, Vec3D b, Vec3D c, ZBuffer zBuffer, Col col1, Col col2, Col col3) {
 
 
         Vec3D temp;
@@ -118,7 +118,7 @@ public class TriangleRasterizer {
 
             for (int x = x1; x <= x2; x++) {
                 //barvy se interpolují špatně, proto prostě bez shaderu (for now at least)
-                zBuffer.drawWithTest(x, y, z, new Col(0x0000ff));//TODO vertex ten interpolovanej, same bellow);
+                zBuffer.drawWithTest(x, y, z, new Col(0x00ff00));//TODO vertex ten interpolovanej, same bellow);
                 z += zStep;
             }
         }

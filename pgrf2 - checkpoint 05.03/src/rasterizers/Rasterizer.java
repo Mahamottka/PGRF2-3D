@@ -4,6 +4,8 @@ import model.Vertex;
 import raster.ZBuffer;
 import transforms.Vec3D;
 
+import java.awt.*;
+
 /***
  *
  */
@@ -28,11 +30,12 @@ public class Rasterizer {
         b = b.dehomog();
         c = c.dehomog();
 
+
         Vec3D aV = a.transformToWindow(w,h);
         Vec3D bV = b.transformToWindow(w,h);
         Vec3D cV = c.transformToWindow(w,h);
 
-        triangleRasterizer.rasterize(aV,bV,cV,zBuffer);
+        triangleRasterizer.rasterize(aV,bV,cV,zBuffer, a.getColor(), b.getColor(), c.getColor());
 
     }
     public void rasterizeLine(Vertex a, Vertex b){

@@ -6,7 +6,6 @@ public class Vertex implements Vectorizable<Vertex>{
 
     private final Point3D position;
     private Col color;
-    private Mat4 model = new Mat4Identity();
 
     //TODO souradnice do textury - toto je pro textury
     private Vec2D u,v;
@@ -105,13 +104,5 @@ public class Vertex implements Vectorizable<Vertex>{
                         (width - 1) / 2.,
                         (height - 1) / 2.,
                         1));
-    }
-
-    public Mat4 getModel() {
-        return model;
-    }
-
-    public Mat4 setModel(){
-        return model;
     }
 }

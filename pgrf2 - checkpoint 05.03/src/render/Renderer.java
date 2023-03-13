@@ -45,6 +45,9 @@ public class Renderer {
                         Vertex a = solid.getVertexBuffer().get(solid.getIndexBuffer().get(indexA));
                         Vertex b = solid.getVertexBuffer().get(solid.getIndexBuffer().get(indexB));
 
+                        a = a.transform(solid.getModel(), cameraMat, proj);
+                        b = b.transform(solid.getModel(), cameraMat, proj);
+
                         renderLine(a,b);
                     }
                     break;
@@ -64,6 +67,9 @@ public class Renderer {
                         Vertex b = solid.getVertexBuffer().get(solid.getIndexBuffer().get(indexB));
                         Vertex c = solid.getVertexBuffer().get(solid.getIndexBuffer().get(indexC));
 
+                        a = a.transform(solid.getModel(), cameraMat, proj);
+                        b = b.transform(solid.getModel(), cameraMat, proj);
+                        c = c.transform(solid.getModel(), cameraMat, proj);
                         // Poslat do rasterizeru
                         renderTriangle(a,b,c);
                     }
@@ -73,21 +79,11 @@ public class Renderer {
     }
 
     private void renderLine(Vertex a, Vertex b){
-        a = a.transform(a.getModel(), cameraMat, proj);
-        b = b.transform(b.getModel(), cameraMat, proj);
 
-        //když oba dva body jsou mimo vykreslovacín objem, tak přestaneš vykreslovat tvar
-        //if (Clip.testMultipleVertex(a,b) == 2) return;
 
         rasterizer.rasterizeLine(a,b);
     }
     private void renderTriangle(Vertex a, Vertex b, Vertex c){
-        a = a.transform(a.getModel(), cameraMat, proj);
-        b = b.transform(b.getModel(), cameraMat, proj);
-        c = c.transform(c.getModel(), cameraMat, proj);
-
-        //if (Clip.testMultipleVertex(a,b,c) == 3) return;
-        //Ořezujeme podle Z/
 
         clipTriangle(a,b,c);
     }
