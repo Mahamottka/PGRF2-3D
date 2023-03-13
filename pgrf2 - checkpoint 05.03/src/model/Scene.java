@@ -20,6 +20,10 @@ public class Scene {
         return solids.get(index);
     }
 
+    public int getSize(){
+        return solids.size();
+    }
+
     public void draw(Renderer renderer){
         for (Solid solid: solids) {
             renderer.render(solid);

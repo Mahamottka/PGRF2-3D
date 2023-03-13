@@ -1,5 +1,5 @@
 package Solids;
-
+/*
 import model.Part;
 import model.Solid;
 import model.TopologyType;
@@ -28,3 +28,4 @@ public class Arrow extends Solid {
     }
 
 }
+*/

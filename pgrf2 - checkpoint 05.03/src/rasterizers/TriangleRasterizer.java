@@ -46,7 +46,7 @@ public class TriangleRasterizer {
          * Max se podívá na dva vstupní parametry a vybere větší
          * Min to dělá to samé akorát zvrchu
          * Max a min vlastně řeší ořezávání
-        */
+         */
         //Prvni cyklus
         for (int y = (int) Math.max(a.getGetY() + 1, 0);
              y <= Math.min(b.getGetY(), zBuffer.getImageBuffer().getHeight() -1) ;
@@ -80,7 +80,7 @@ public class TriangleRasterizer {
 
             for (int x = x1; x <= x2; x++) {
                 //barvy se interpolují špatně, proto prostě bez shaderu (for now at least)
-                zBuffer.drawWithTest(x, y, z, new Col(0x00ff00));//TODO vertex ten interpolovanej, same bellow);
+                zBuffer.drawWithTest(x, y, z, new Col(0x00ff00));
                 z += zStep;
             }
         }
@@ -118,7 +118,7 @@ public class TriangleRasterizer {
 
             for (int x = x1; x <= x2; x++) {
                 //barvy se interpolují špatně, proto prostě bez shaderu (for now at least)
-                zBuffer.drawWithTest(x, y, z, new Col(0x00ff00));//TODO vertex ten interpolovanej, same bellow);
+                zBuffer.drawWithTest(x, y, z, new Col(0x0000ff));//TODO vertex ten interpolovanej, same bellow);
                 z += zStep;
             }
         }

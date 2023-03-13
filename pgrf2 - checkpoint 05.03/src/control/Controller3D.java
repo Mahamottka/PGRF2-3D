@@ -1,6 +1,6 @@
 package control;
 
-import Solids.Arrow;
+import Solids.Cube;
 import Solids.Triangle;
 import model.Scene;
 import model.Solid;
@@ -27,15 +27,15 @@ public class Controller3D implements Controller {
     private Camera camera;
     private final Rasterizer rasterizer;
 
+    private int selector = -1;
 
     public Controller3D(Panel panel) {
         this.panel = panel;
         this.zBuffer = new ZBuffer(panel.getRaster());
         this.rasterizer = new Rasterizer(zBuffer);
         this.scene = new Scene();
-        Solid triangle = new Triangle();
-        scene.addSolid(triangle);
-        Col color = new Col(0xff0000);
+
+        init();
 
         //view
         camera = new Camera(
@@ -70,6 +70,14 @@ public class Controller3D implements Controller {
         initListeners();
         redraw();
     }
+    public void init(){
+        //když nebude fungovat tak najebat mimo metodu
+        Solid triangle = new Triangle();
+        scene.addSolid(triangle);
+
+        Solid cube = new Cube();
+        scene.addSolid(cube);
+    }
 
     public void initObjects(ImageBuffer raster) {
         raster.setClearValue(new Col(0x101010));
@@ -102,6 +110,37 @@ public class Controller3D implements Controller {
                 if (e.getKeyCode() == KeyEvent.VK_D){
                     camera = camera.right(cameraSpeed);
                     update = true;}
+
+
+
+                //Selecting object //TODO dodelat scene.getSolid(selector).getColor??
+                if (e.getKeyCode() == KeyEvent.VK_PAGE_UP) {
+                    if (selector >= 0){
+                        scene.getSolid(selector);}
+                    selector += 1;
+                    if (selector >= scene.getSize())
+                        selector = scene.getSize()-1;
+                    scene.getSolid(selector);
+                    update = true;
+                }
+                if (e.getKeyCode() == KeyEvent.VK_PAGE_DOWN) {
+                    if (selector >= 0){
+                        scene.getSolid(selector);}
+                    selector -= 1;
+                    if (selector < 0)
+                        selector = 0;
+                    scene.getSolid(selector);
+                    update = true;
+                }
+                if (e.getKeyCode() == KeyEvent.VK_DELETE) {
+                    if (selector >= 0){
+                        scene.getSolid(selector);}
+                    selector = -1;
+                    update = true;
+                }
+                if (selector >= 0){
+                   //Prostor pro translace
+                }
 
                 if (update){
                     redraw();

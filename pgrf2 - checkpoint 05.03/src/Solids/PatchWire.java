@@ -1,4 +1,4 @@
-package Solids;
+/*package Solids;
 
 
 import model.Solid;
@@ -24,4 +24,4 @@ public class PatchWire extends Solid {
 
     }
 
-}
+}*/

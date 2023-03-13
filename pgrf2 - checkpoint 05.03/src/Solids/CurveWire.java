@@ -1,4 +1,4 @@
-package Solids;
+/*package Solids;
 
 import model.Solid;
 import model.Vertex;
@@ -32,3 +32,4 @@ public class CurveWire extends Solid {
         //TODO part buffer
     }
 }
+*/

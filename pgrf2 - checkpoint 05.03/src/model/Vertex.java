@@ -19,15 +19,21 @@ public class Vertex implements Vectorizable<Vertex>{
 
 
 
-    public Vertex(double x, double y, double z) {
+    public Vertex(double x, double y, double z, Col color) {
         this.position = new Point3D(x,y,z);
-        this.color = new Col(0xff0000);
+        this.color = color;
         this.one = 1;
 
     }
 
-    public Vertex(Point3D position){
+    public Vertex(Point3D position, Col color){
         this.position = position;
+        this.color = color;
+    }
+
+    public Vertex(Vec3D vec3D, Col color){
+        this.position = new Point3D(vec3D.getX(),vec3D.getGetY(),vec3D.getZ());
+        this.color = color;
     }
 
     public double getOne() {
@@ -36,16 +42,16 @@ public class Vertex implements Vectorizable<Vertex>{
 
     @Override
     public Vertex mul(double k) { //nesmíme zapomenout na "one" TODO - pro textury
-        return new Vertex(position.getX() * k, position.getY() * k, position.getZ() * k);
+        return new Vertex(position.getX() * k, position.getY() * k, position.getZ() * k, color);
     }
 
     public Vertex mul(Mat4 trans){
-        return new Vertex(position.mul(trans));
+        return new Vertex(position.mul(trans), color);
     }
 
     @Override
     public Vertex add(Vertex vertex) { //nesmíme zapomenout na "one"
-        return new Vertex(position.add(vertex.getPosition()));
+        return new Vertex(position.add(vertex.getPosition()), color);
     }
 
 
@@ -102,6 +108,10 @@ public class Vertex implements Vectorizable<Vertex>{
     }
 
     public Mat4 getModel() {
+        return model;
+    }
+
+    public Mat4 setModel(){
         return model;
     }
 }
