@@ -8,9 +8,6 @@ public class Scene {
 
     private final ArrayList<Solid> solids = new ArrayList<>();
 
-    public ArrayList<Solid> getSolids() {
-        return solids;
-    }
 
     public void addSolid(Solid solid){
         solids.add(solid);

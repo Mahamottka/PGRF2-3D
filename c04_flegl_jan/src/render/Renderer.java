@@ -6,10 +6,8 @@ import model.Vertex;
 import rasterizers.Rasterizer;
 
 import transforms.*;
-import utils.Clip;
 import utils.Lerp;
 
-import java.util.List;
 
 public class Renderer {
 
@@ -114,11 +112,6 @@ public class Renderer {
 
         clipTriangle(a,b,c);
     }
-    private void renderPoint(Vertex a){
-
-    }
-
-
 
     private void clipTriangle(Vertex a, Vertex b, Vertex c) {
         if ((a.getX() > a.getW() && b.getX() > b.getW() && c.getX() > c.getW()) ||
