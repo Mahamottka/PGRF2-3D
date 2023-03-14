@@ -89,6 +89,18 @@ public class Renderer {
                         renderTriangle(a, b, c);
                     }
                     break;
+                case LINE_STRIP:
+                    for (int i = 0; i < part.getCount(); i++) {
+                        int start3 = part.getIndex() + i;
+                        Vertex a = solid.getVertexBuffer().get(solid.getIndexBuffer().get(start3));
+                        Vertex b = solid.getVertexBuffer().get(solid.getIndexBuffer().get(start3 + 1));
+
+                        a = a.transform(solid.getModel(), cameraMat, proj);
+                        b = b.transform(solid.getModel(), cameraMat, proj);
+
+                        renderLine(a, b);
+                    }
+                    break;
             }
         }
     }

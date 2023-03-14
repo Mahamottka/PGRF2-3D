@@ -7,26 +7,26 @@ import raster.ImageBuffer;
 import raster.ZBuffer;
 import rasterizers.Rasterizer;
 import render.Renderer;
-import shaders.Shader;
 import transforms.*;
 import view.Panel;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Controller3D implements Controller {
     private final Panel panel;
     private int ox, oy;
     private final ZBuffer zBuffer;
-    private final Scene scene, scene2;
+    private final Scene scene, scene2, scene3;
     private double cameraSpeed = 2;
     private Renderer renderer;
     private Mat4OrthoRH projekceOrtho;
     private Mat4PerspRH projekcePersp;
     private Camera camera;
     private final Rasterizer rasterizer;
+    private JLabel label;
 
     private int selector = -1;
 
@@ -36,12 +36,18 @@ public class Controller3D implements Controller {
         this.rasterizer = new Rasterizer(zBuffer);
         this.scene = new Scene();
         this.scene2 = new Scene();
+        this.scene3 = new Scene();
+        label = new JLabel();
+        panel.add(label);
+        label.setForeground(Color.WHITE);
+        label.setText("Nevybrané žádné těleso");
 
         init();
 
+
         //view
         camera = new Camera(
-                new Vec3D(0, -5, 2), //pokud chci 3rd person, nastavit x a y a z na nulu
+                new Vec3D(0, -10, 5), //pokud chci 3rd person, nastavit x a y a z na nulu
                 Math.toRadians(90),  //azimut
                 Math.toRadians(0),  //zenith
                 1, true     //pro 3rd person, nastavit na false a 1 na 4 (třeba)
@@ -84,6 +90,12 @@ public class Controller3D implements Controller {
 
         Solid zAxis = new zAxis();
         scene2.addSolid(zAxis);
+
+        Solid triangleCrossing = new TriangleCrossing();
+        scene.addSolid(triangleCrossing);
+
+        Solid pyramid = new Pyramid();
+        scene.addSolid(pyramid);
     }
 
     public void initObjects(ImageBuffer raster) {
@@ -103,7 +115,7 @@ public class Controller3D implements Controller {
         panel.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-
+                label.setText("Nevybrané žádné těleso");
                 boolean update = false;
                 //projekce
                 if (e.getKeyCode() == KeyEvent.VK_P){
@@ -137,6 +149,7 @@ public class Controller3D implements Controller {
                     if (selector >= scene.getSize())
                         selector = scene.getSize()-1;
                     scene.getSolid(selector);
+                    label.setText("Vybírání tělesa");
                     update = true;
                 }
                 if (e.getKeyCode() == KeyEvent.VK_PAGE_DOWN) {
@@ -146,12 +159,14 @@ public class Controller3D implements Controller {
                     if (selector < 0)
                         selector = 0;
                     scene.getSolid(selector);
+                    label.setText("Vybírání tělesa");
                     update = true;
                 }
                 if (e.getKeyCode() == KeyEvent.VK_DELETE) {
                     if (selector >= 0){
                         scene.getSolid(selector);}
                     selector = -1;
+                    label.setText("Nevybrané žádné těleso");
                     update = true;
                 }
                 if (selector >= 0){
@@ -159,50 +174,72 @@ public class Controller3D implements Controller {
                     if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
                         scene.getSolid(selector).setModel(scene.getSolid(selector).getModel().mul(new Mat4Transl(new Vec3D(1, 0, 0))));
                         update = true;
+                        label.setText("Vybírání tělesa");
+
                     }
                     if (e.getKeyCode() == KeyEvent.VK_LEFT) {
                         scene.getSolid(selector).setModel(scene.getSolid(selector).getModel().mul(new Mat4Transl(new Vec3D(-1, 0, 0))));
                         update = true;
+                        label.setText("Vybírání tělesa");
+
                     }
                     if (e.getKeyCode() == KeyEvent.VK_UP) {
                         scene.getSolid(selector).setModel(scene.getSolid(selector).getModel().mul(new Mat4Transl(new Vec3D(0, 1, 0))));
                         update = true;
+                        label.setText("Vybírání tělesa");
+
                     }
                     if (e.getKeyCode() == KeyEvent.VK_DOWN) {
                         scene.getSolid(selector).setModel(scene.getSolid(selector).getModel().mul(new Mat4Transl(new Vec3D(0, -1, 0))));
                         update = true;
+                        label.setText("Vybírání tělesa");
+
                     }
                     if (e.getKeyCode() == KeyEvent.VK_SHIFT) { //nahoru
                         scene.getSolid(selector).setModel(scene.getSolid(selector).getModel().mul(new Mat4Transl(new Vec3D(0, 0, 1))));
                         update = true;
+                        label.setText("Vybírání tělesa");
+
                     }
                     if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
                         scene.getSolid(selector).setModel(scene.getSolid(selector).getModel().mul(new Mat4Transl(new Vec3D(0, 0, -1))));
                         update = true;
+                        label.setText("Vybírání tělesa");
+
                     }
 
                     //Rotace objektu
                     if (e.getKeyCode() == KeyEvent.VK_X) {
                         scene.getSolid(selector).setModel(scene.getSolid(selector).getModel().mul(new Mat4RotX(3.14 / 8)));
                         update = true;
+                        label.setText("Vybírání tělesa");
+
                     }
                     if (e.getKeyCode() == KeyEvent.VK_Y) {
                         scene.getSolid(selector).setModel(scene.getSolid(selector).getModel().mul(new Mat4RotY(3.14 / 8)));
                         update = true;
+                        label.setText("Vybírání tělesa");
+
                     }
                     if (e.getKeyCode() == KeyEvent.VK_Z) {
                         scene.getSolid(selector).setModel(scene.getSolid(selector).getModel().mul(new Mat4RotZ(3.14 / 8)));
                         update = true;
+                        label.setText("Vybírání tělesa");
+
                     }
 
                     //Zoom
                     if (e.getKeyCode() == KeyEvent.VK_HOME) {
                         scene.getSolid(selector).setModel(scene.getSolid(selector).getModel().mul(new Mat4Scale(1.1)));
                         update = true;
+                        label.setText("Vybírání tělesa");
+
                     }
                     if (e.getKeyCode() == KeyEvent.VK_END) {
                         scene.getSolid(selector).setModel(scene.getSolid(selector).getModel().mul(new Mat4Scale(0.9)));
                         update = true;
+                        label.setText("Vybírání tělesa");
+
                     }
 
                 }
@@ -242,13 +279,13 @@ public class Controller3D implements Controller {
             }
         });
     }
-
     private void redraw() {
         renderer.setCamera(camera);
         panel.clear();
         zBuffer.getDepthBuffer().clear();
         scene.draw(renderer);
         scene2.draw(renderer);
+        scene3.draw(renderer);
         panel.repaint();
     }
 }

@@ -92,7 +92,7 @@ public class TriangleRasterizer {
                 color = ac;
             }
 
-            for (int x = x1; x <= x2; x++) {
+            for (int x = x1 + 1; x <= x2; x++) {
                 //barvy se interpolují špatně, proto prostě bez shaderu (for now at least)
                 zBuffer.drawWithTest(x, y, z, new Col(color));
                 z += zStep;
@@ -137,7 +137,7 @@ public class TriangleRasterizer {
                 color = ac;
             }
 
-            for (int x = x1; x <= x2; x++) {
+            for (int x = x1 + 1; x <= x2; x++) {
                 //barvy se interpolují špatně, proto prostě bez shaderu (for now at least)
                 zBuffer.drawWithTest(x, y, z, new Col(color));
                 z += zStep;
