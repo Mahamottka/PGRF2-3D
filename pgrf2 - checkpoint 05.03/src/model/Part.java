@@ -4,12 +4,12 @@ public class Part {
 
     private TopologyType type;
 
-    private final int intex; // pocatecni index indexbufferu
+    private final int index; // pocatecni index indexbufferu
     private final int count; // pocet primitiv (tech teles), nikoliv indexu
 
-    public Part(TopologyType type, int intex, int count) {
+    public Part(TopologyType type, int index, int count) {
         this.type = type;
-        this.intex = intex;
+        this.index = index;
         this.count = count;
     }
 
@@ -17,8 +17,8 @@ public class Part {
         return type;
     }
 
-    public int getIntex() {
-        return intex;
+    public int getIndex() {
+        return index;
     }
 
     public int getCount() {

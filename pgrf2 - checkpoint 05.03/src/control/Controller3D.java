@@ -1,7 +1,6 @@
 package control;
 
-import Solids.Cube;
-import Solids.Triangle;
+import Solids.*;
 import model.Scene;
 import model.Solid;
 import raster.ImageBuffer;
@@ -21,8 +20,8 @@ public class Controller3D implements Controller {
     private final Panel panel;
     private int ox, oy;
     private final ZBuffer zBuffer;
-    private final Scene scene;
-    private double cameraSpeed = 10;
+    private final Scene scene, scene2;
+    private double cameraSpeed = 2;
     private Renderer renderer;
     private Mat4OrthoRH projekceOrtho;
     private Mat4PerspRH projekcePersp;
@@ -36,12 +35,13 @@ public class Controller3D implements Controller {
         this.zBuffer = new ZBuffer(panel.getRaster());
         this.rasterizer = new Rasterizer(zBuffer);
         this.scene = new Scene();
+        this.scene2 = new Scene();
 
         init();
 
         //view
         camera = new Camera(
-                new Vec3D(100, -100, 50), //pokud chci 3rd person, nastavit x a y a z na nulu
+                new Vec3D(0, -5, 2), //pokud chci 3rd person, nastavit x a y a z na nulu
                 Math.toRadians(90),  //azimut
                 Math.toRadians(0),  //zenith
                 1, true     //pro 3rd person, nastavit na false a 1 na 4 (třeba)
@@ -75,6 +75,15 @@ public class Controller3D implements Controller {
 
         Solid cube = new Cube();
         scene.addSolid(cube);
+
+        Solid xAxis = new xAxis();
+        scene2.addSolid(xAxis);
+
+        Solid yAxis = new yAxis();
+        scene2.addSolid(yAxis);
+
+        Solid zAxis = new zAxis();
+        scene2.addSolid(zAxis);
     }
 
     public void initObjects(ImageBuffer raster) {
@@ -239,6 +248,7 @@ public class Controller3D implements Controller {
         panel.clear();
         zBuffer.getDepthBuffer().clear();
         scene.draw(renderer);
+        scene2.draw(renderer);
         panel.repaint();
     }
 }

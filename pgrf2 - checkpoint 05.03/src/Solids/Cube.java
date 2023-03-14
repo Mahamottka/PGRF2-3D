@@ -8,82 +8,26 @@ import transforms.Col;
 
 public class Cube extends Solid {
 
-    public Cube(){
+    public Cube() {
         //vytvorit celou cube
-        getVertexBuffer().add(new Vertex(10,10,10, new Col(0xff0000)));
-        getVertexBuffer().add(new Vertex(10,20,10, new Col(0x00ff00)));
-        getVertexBuffer().add(new Vertex(20,10,10, new Col(0x0000ff)));
-        getVertexBuffer().add(new Vertex(20,20,10, new Col(0xff0000)));
+        vertexBuffer.add(new Vertex(40, 50, 0, new Col(0xff0000))); //0
+        vertexBuffer.add(new Vertex(40, 40, 0, new Col(0xff00ff))); //1
+        vertexBuffer.add(new Vertex(50, 50, 0, new Col(0xffff00))); //2
+        vertexBuffer.add(new Vertex(50, 40, 0, new Col(0xffffff))); //3
 
-        getVertexBuffer().add(new Vertex(10,10,20, new Col(0xff0000)));
-        getVertexBuffer().add(new Vertex(10,20,20, new Col(0x00ff00)));
-        getVertexBuffer().add(new Vertex(20,10,20, new Col(0x0000ff)));
-        getVertexBuffer().add(new Vertex(20,20,20, new Col(0xff0000)));
+        vertexBuffer.add(new Vertex(40, 50, 10, new Col(0xffffff))); //4
+        vertexBuffer.add(new Vertex(40, 40, 10, new Col(0x0000ff))); //5
+        vertexBuffer.add(new Vertex(50, 50, 10, new Col(0x00ff00))); //6
+        vertexBuffer.add(new Vertex(50, 40, 10, new Col(0x00ffff))); //7
 
-        getVertexBuffer().add(new Vertex(10,10,10, new Col(0xff0000)));
-        getVertexBuffer().add(new Vertex(10,20,10, new Col(0x00ff00)));
-        getVertexBuffer().add(new Vertex(10,10,20, new Col(0x0000ff)));
-        getVertexBuffer().add(new Vertex(10,20,20, new Col(0xff0000)));
+        addIndices(0, 1, 2, 3, 6, 7, 4, 5, 0, 1,
+                1 ,5, 3, 7,
+                6, 4, 2, 0);
 
-        getVertexBuffer().add(new Vertex(20,10,10, new Col(0xff0000)));
-        getVertexBuffer().add(new Vertex(20,20,10, new Col(0x00ff00)));
-        getVertexBuffer().add(new Vertex(20,10,20, new Col(0x0000ff)));
-        getVertexBuffer().add(new Vertex(20,20,20, new Col(0xff0000)));
-
-        getVertexBuffer().add(new Vertex(10,10,10, new Col(0xff0000)));
-        getVertexBuffer().add(new Vertex(20,10,10, new Col(0x00ff00)));
-        getVertexBuffer().add(new Vertex(10,10,20, new Col(0x0000ff)));
-        getVertexBuffer().add(new Vertex(20,10,20, new Col(0xff0000)));
-
-        getVertexBuffer().add(new Vertex(10,20,10, new Col(0xff0000)));
-        getVertexBuffer().add(new Vertex(20,20,10, new Col(0x00ff00)));
-        getVertexBuffer().add(new Vertex(20,20,20, new Col(0x0000ff)));
-        getVertexBuffer().add(new Vertex(10,20,20, new Col(0xff0000)));
-
-        getIndexBuffer().add(0);
-        getIndexBuffer().add(1);
-        getIndexBuffer().add(2);
-        getIndexBuffer().add(1);
-        getIndexBuffer().add(2);
-        getIndexBuffer().add(3);
-
-        getIndexBuffer().add(4);
-        getIndexBuffer().add(5);
-        getIndexBuffer().add(6);
-        getIndexBuffer().add(5);
-        getIndexBuffer().add(6);
-        getIndexBuffer().add(7);
-
-        getIndexBuffer().add(8);
-        getIndexBuffer().add(9);
-        getIndexBuffer().add(10);
-        getIndexBuffer().add(9);
-        getIndexBuffer().add(10);
-        getIndexBuffer().add(11);
-
-        getIndexBuffer().add(12);
-        getIndexBuffer().add(13);
-        getIndexBuffer().add(14);
-        getIndexBuffer().add(13);
-        getIndexBuffer().add(14);
-        getIndexBuffer().add(15);
-
-        getIndexBuffer().add(16);
-        getIndexBuffer().add(17);
-        getIndexBuffer().add(18);
-        getIndexBuffer().add(17);
-        getIndexBuffer().add(18);
-        getIndexBuffer().add(19);
-
-        getIndexBuffer().add(20);
-        getIndexBuffer().add(21);
-        getIndexBuffer().add(22);
-        getIndexBuffer().add(21);
-        getIndexBuffer().add(22);
-        getIndexBuffer().add(23);
-
-        getPartBuffer().add(new Part(TopologyType.TRIANGLE,0,12));
-
+        partBuffer.add(new Part(TopologyType.TRIANGLE_STRIP, 0, 8));
+        partBuffer.add(new Part(TopologyType.TRIANGLE_STRIP, 10, 2));
+        partBuffer.add(new Part(TopologyType.TRIANGLE_STRIP, 14, 2));
     }
 
 }
+

@@ -7,8 +7,10 @@ import transforms.Vec3D;
 import utils.Lerp;
 
 public class LineRasterizer {
+    private Lerp lerp;
 
     public LineRasterizer() {
+        this.lerp = new Lerp();
     }
 
     /***
@@ -18,7 +20,7 @@ public class LineRasterizer {
      * @param b after transformtowindow
      * @param zBuffer just a zbuffer
      */
-    public void rasterize(Vec3D a, Vec3D b, ZBuffer zBuffer) {
+    public void rasterize(Vec3D a, Vec3D b, ZBuffer zBuffer, Col colA, Col colB) {
 
         //kvadrály
         double k = (b.getGetY() - a.getGetY()) / (b.getX() - a.getX());
@@ -39,7 +41,8 @@ public class LineRasterizer {
                 if (y < 0 && y > zBuffer.getImageBuffer().getHeight() - 1) continue;
 
                 double z = (a.getZ() * (1 - t) + b.getZ() * t);
-                zBuffer.drawWithTest(x, y, z, new Col(0x00ff00));
+                Col color = lerp.lerp(colA,colB, t);
+                zBuffer.drawWithTest(x, y, z, new Col(color));
             }
         } else {
 
@@ -58,7 +61,8 @@ public class LineRasterizer {
                 if (x < 0 && x > zBuffer.getImageBuffer().getWidth() - 1) continue;
 
                 double z = (a.getZ() * (1 - t) + b.getZ() * t);
-                zBuffer.drawWithTest(x, y, z, new Col(0x00ff00));
+                Col color = lerp.lerp(colA,colB, t);
+                zBuffer.drawWithTest(x, y, z, new Col(color));
             }
         }
 

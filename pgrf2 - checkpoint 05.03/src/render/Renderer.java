@@ -35,7 +35,7 @@ public class Renderer {
         for (Part part : solid.getPartBuffer()) {
             switch (part.getType()) {
                 case LINE:
-                    int start2 = part.getIntex();
+                    int start2 = part.getIndex();
                     for (int i = 0; i < part.getCount(); i++) {
                         int indexA = start2;
                         int indexB = start2 + 1;
@@ -52,7 +52,7 @@ public class Renderer {
                     }
                     break;
                 case TRIANGLE:
-                    int start = part.getIntex();
+                    int start = part.getIndex();
                     for (int i = 0; i < part.getCount(); i++) {
                         // spocitat pozice indexu v indexbufferu (start + 1, start + 2)
                         int indexA = start;
@@ -67,11 +67,26 @@ public class Renderer {
                         Vertex b = solid.getVertexBuffer().get(solid.getIndexBuffer().get(indexB));
                         Vertex c = solid.getVertexBuffer().get(solid.getIndexBuffer().get(indexC));
 
+
                         a = a.transform(solid.getModel(), cameraMat, proj);
                         b = b.transform(solid.getModel(), cameraMat, proj);
                         c = c.transform(solid.getModel(), cameraMat, proj);
                         // Poslat do rasterizeru
                         renderTriangle(a,b,c);
+                    }
+                    break;
+                case TRIANGLE_STRIP:
+                    for (int i = 0; i < part.getCount(); i++) {
+                        int start3 = part.getIndex() + i;
+                        Vertex a = solid.getVertexBuffer().get(solid.getIndexBuffer().get(start3));
+                        Vertex b = solid.getVertexBuffer().get(solid.getIndexBuffer().get(start3 + 1));
+                        Vertex c = solid.getVertexBuffer().get(solid.getIndexBuffer().get(start3 + 2));
+
+                        a = a.transform(solid.getModel(), cameraMat, proj);
+                        b = b.transform(solid.getModel(), cameraMat, proj);
+                        c = c.transform(solid.getModel(), cameraMat, proj);
+
+                        renderTriangle(a, b, c);
                     }
                     break;
             }

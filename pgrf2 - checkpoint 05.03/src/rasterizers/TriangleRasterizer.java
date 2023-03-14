@@ -24,20 +24,27 @@ public class TriangleRasterizer {
         this.shader = shader;
     }
 
-    public void rasterize(Vec3D a, Vec3D b, Vec3D c, ZBuffer zBuffer, Col col1, Col col2, Col col3) {
+    public void rasterize(Vec3D a, Vec3D b, Vec3D c, ZBuffer zBuffer, Col colA, Col colB, Col colC) {
 
 
         Vec3D temp;
+        Col colorTemp;
         while (!(a.getGetY() <= b.getGetY() && b.getGetY() <= c.getGetY())) {
             if (a.getGetY() > b.getGetY()) {
                 temp = a;
                 a = b;
                 b = temp;
+                colorTemp = colA;
+                colA = colB;
+                colB = colorTemp;
             }
             if (b.getGetY() > c.getGetY()) {
                 temp = b;
                 b = c;
                 c = temp;
+                colorTemp = colB;
+                colB = colC;
+                colC = colorTemp;
             }
         }
 
@@ -57,7 +64,7 @@ public class TriangleRasterizer {
             int x1 = (int) ((1 - t1) * a.getX() + t1 * b.getX());
 
             Vec3D vab = lerp.lerp(a, b, t1);
-
+            Col ab = lerp.lerp(colA, colB, t1);
 
             //interpolacni keoficient pro AC
             double t2 = (y - a.getGetY()) / (c.getGetY() - a.getGetY());
@@ -65,23 +72,31 @@ public class TriangleRasterizer {
 
             Vec3D vac = lerp.lerp(a, c, t2);
 
+            Col ac = lerp.lerp(colA, colC, t2);
+
             //vypocet pro Z
             double zStep = ((vac.getZ() - vab.getZ())/ (x2 - x1));
             x1 = Math.max(x1 + 1,0);
             x2 = Math.min(x2, zBuffer.getImageBuffer().getWidth() - 1);
             double z = vab.getZ();
 
+            Col colStep = ((ac.add(ab.mul(-1))).mul(1. / (x2 - x1)));
+            Col color = ab;
+
+
             if (x1 > x2) {
                 int helper = x1;
                 x1 = x2;
                 x2 = helper;
                 z = vac.getZ();
+                color = ac;
             }
 
             for (int x = x1; x <= x2; x++) {
                 //barvy se interpolují špatně, proto prostě bez shaderu (for now at least)
-                zBuffer.drawWithTest(x, y, z, new Col(0x00ff00));
+                zBuffer.drawWithTest(x, y, z, new Col(color));
                 z += zStep;
+                color = color.add(colStep);
             }
         }
 
@@ -94,7 +109,8 @@ public class TriangleRasterizer {
             double t1 = (y - b.getGetY()) / (c.getGetY() - b.getGetY());
             int x1 = (int) ((1 - t1) * b.getX() + t1 * c.getX());
 
-            Vec3D vab = lerp.lerp(b, c, t1);
+            Vec3D vbc = lerp.lerp(b, c, t1);
+            Col bc = lerp.lerp(colB, colC, t1);
 
 
             //interpolacni keoficient pro AC
@@ -102,24 +118,30 @@ public class TriangleRasterizer {
             int x2 = (int) ((1 - t2) * a.getX() + t2 * c.getX());
 
             Vec3D vac = lerp.lerp(a, c, t2);
+            Col ac = lerp.lerp(colA, colC, t2);
 
             //vypocet pro Z
-            double zStep = ((vac.getZ() - vab.getZ())/ (x2 - x1));
+            double zStep = ((vac.getZ() - vbc.getZ())/ (x2 - x1));
             x1 = Math.max(x1 + 1,0);
             x2 = Math.min(x2, zBuffer.getImageBuffer().getWidth() - 1);
-            double z = vab.getZ();
+            double z = vbc.getZ();
+
+            Col colStep = ((ac.add(bc.mul(-1))).mul(1. / (x2 - x1)));
+            Col color = bc;
 
             if (x1 > x2) {
                 int helper = x1;
                 x1 = x2;
                 x2 = helper;
                 z = vac.getZ();
+                color = ac;
             }
 
             for (int x = x1; x <= x2; x++) {
                 //barvy se interpolují špatně, proto prostě bez shaderu (for now at least)
-                zBuffer.drawWithTest(x, y, z, new Col(0x00ff00));//TODO vertex ten interpolovanej, same bellow);
+                zBuffer.drawWithTest(x, y, z, new Col(color));
                 z += zStep;
+                color = color.add(colStep);
             }
         }
 

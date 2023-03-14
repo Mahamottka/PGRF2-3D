@@ -45,7 +45,7 @@ public class Rasterizer {
         Vec3D aV = a.transformToWindow(w,h);
         Vec3D bV = b.transformToWindow(w,h);
 
-        lineRasterizer.rasterize(aV, bV, zBuffer);
+        lineRasterizer.rasterize(aV, bV, zBuffer, a.getColor(), b.getColor());
 
     }
     public void rasterizePoint(Vertex a){
